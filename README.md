@@ -1,8 +1,9 @@
 # litertlm-jvm-demo
 
-Projeto Gradle mínimo para rodar um LLM local na sua máquina Linux usando a
-API Kotlin/JVM do [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM),
-sem precisar do Bazel.
+Chat de terminal em Kotlin/JVM que roda um LLM local (`.litertlm`) na CPU
+usando a API do [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM),
+sem precisar do Bazel. Projeto Gradle mínimo, feito para Linux (funciona
+também em macOS/Windows).
 
 ## Pré-requisitos
 
