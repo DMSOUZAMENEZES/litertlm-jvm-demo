@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+.kotlin/
+
+# Modelos (grandes, baixados a parte)
+models/
+*.litertlm
+*.task
+
+# LibreOffice lock
+.~lock.*#
+
+# IDE
+.idea/
+*.iml

@@ -1,0 +1,3 @@
+# Rode 'sdk env' nesta pasta para ativar o JDK 21 exigido pelo litertlm-jvm.
+java=21.0.5-tem
+gradle=8.14.4
