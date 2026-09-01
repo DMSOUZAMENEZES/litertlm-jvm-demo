@@ -65,6 +65,22 @@ A primeira execução demora mais porque o Gradle baixa as dependências
 (incluindo `litertlm-jvm` do Google Maven). Depois disso, o carregamento do
 modelo em si leva alguns segundos.
 
+## Personalidade do assistente (`systemInstruction`)
+
+O chat cria a conversa com um `ConversationConfig` que carrega um
+`systemInstruction` fixo (ver `DEFAULT_SYSTEM_INSTRUCTION` em `Main.kt`):
+respostas curtas, em português, admitindo quando não sabe.
+
+Para trocar sem editar o código, use a variável de ambiente `LITERTLM_SYSTEM`:
+
+```bash
+LITERTLM_SYSTEM="Responda sempre como um pirata mal-humorado." ./run.sh
+LITERTLM_SYSTEM="" ./run.sh          # desliga o systemInstruction
+```
+
+Modelos pequenos (Gemma3-1B) seguem instruções de sistema de forma frouxa —
+o efeito fica mais evidente em modelos maiores.
+
 ## Versões travadas (`build.gradle.kts`)
 
 O `litertlm-jvm` 0.17.0-alpha1 impõe três combinações que precisam bater:
@@ -85,7 +101,5 @@ O `litertlm-jvm` 0.17.0-alpha1 impõe três combinações que precisam bater:
 
 - Trocar `Backend.CPU()` por `Backend.GPU()` no `Main.kt` se sua máquina tiver
   GPU compatível (OpenCL).
-- Adicionar `ConversationConfig` com `systemInstruction` para dar uma
-  personalidade fixa ao assistente.
 - Registrar `tools` (function calling) se usar um modelo compatível, como o
   FunctionGemma.
