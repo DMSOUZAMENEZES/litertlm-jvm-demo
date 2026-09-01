@@ -26,6 +26,10 @@ dependencies {
     // passou a existir no coroutines 1.11.0 (em 1.9.0/1.10.2 fica em
     // SendChannel$DefaultImpls). Sem isso: NoSuchMethodError ao terminar a resposta.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+
+    // Necessario para function calling: tool() usa kotlin.reflect.full.KClasses
+    // para descobrir as funcoes @Tool do ToolSet em runtime.
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.10")
 }
 
 application {

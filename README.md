@@ -81,6 +81,33 @@ LITERTLM_SYSTEM="" ./run.sh          # desliga o systemInstruction
 Modelos pequenos (Gemma3-1B) seguem instruções de sistema de forma frouxa —
 o efeito fica mais evidente em modelos maiores.
 
+## Function calling (`tools`)
+
+`Main.kt` tem uma classe `DemoTools : ToolSet` com três funções `@Tool`
+(`get_current_time`, `add_numbers`, `celsius_to_fahrenheit`). Quando o modo
+está ativo, elas entram no `ConversationConfig` com `automaticToolCalling = true`
+— o motor detecta a chamada, executa a função Kotlin e devolve o resultado ao
+modelo sozinho. Cada execução é logada em `stderr` como `[tool] ...`.
+
+O modo liga quando o nome do arquivo do modelo casa com `functiongemma` /
+`mobile-actions`, ou com `LITERTLM_TOOLS=1` (e `LITERTLM_TOOLS=0` força
+desligar). `Capabilities.supportsFunctionCalling()` retorna `false` nos
+`.litertlm` da litert-community, então não dá para auto-detectar pela API.
+
+Precisa de um modelo treinado para isso, por exemplo
+[functiongemma-270m-ft-mobile-actions](https://huggingface.co/litert-community/functiongemma-270m-ft-mobile-actions)
+(arquivo `mobile_actions_q8_ekv1024.litertlm`, ~289 MB, gated pela licença Gemma):
+
+```bash
+./run.sh models/functiongemma-270m-mobile-actions.litertlm
+>>> Convert 100 Celsius to Fahrenheit.
+[tool] celsius_to_fahrenheit(celsius=100.0) -> 212.0
+The temperature 100 Celsius has been converted to Fahrenheit.
+```
+
+Esse modelo de 270M é fraco em casar pergunta↔ferramenta (foi afinado para
+ações de celular); a integração funciona, a precisão vem do modelo.
+
 ## Versões travadas (`build.gradle.kts`)
 
 O `litertlm-jvm` 0.17.0-alpha1 impõe três combinações que precisam bater:
@@ -90,6 +117,7 @@ O `litertlm-jvm` 0.17.0-alpha1 impõe três combinações que precisam bater:
 | Plugin Kotlin | `2.4.10` | as classes do `litertlm-jvm` têm metadata Kotlin 2.4.x; Kotlin 1.9 não lê |
 | JDK (toolchain) | `21` | bytecode Java 21 (class file v65) |
 | `kotlinx-coroutines-core` | `1.11.0` | o bytecode chama `SendChannel.close$default` como método **estático de interface**, que só existe a partir do coroutines 1.11.0 (o POM do litertlm pede 1.9.0, que quebra com `NoSuchMethodError` ao terminar a resposta) |
+| `kotlin-reflect` | `2.4.10` | `tool()` usa `kotlin.reflect.full.KClasses` para achar as funções `@Tool` do `ToolSet` em runtime |
 
 ## Estrutura
 
@@ -101,5 +129,5 @@ O `litertlm-jvm` 0.17.0-alpha1 impõe três combinações que precisam bater:
 
 - Trocar `Backend.CPU()` por `Backend.GPU()` no `Main.kt` se sua máquina tiver
   GPU compatível (OpenCL).
-- Registrar `tools` (function calling) se usar um modelo compatível, como o
-  FunctionGemma.
+- Expor `SamplerConfig` (temperature / top-k / top-p) via env ou args.
+- Empacotar como distribuível (`installDist` / fat jar) para rodar sem Gradle.
